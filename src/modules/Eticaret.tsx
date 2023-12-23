@@ -6,10 +6,13 @@ import CartShowCase, {
 import ProductsShowCase from "./products-module/ProductsShowCase";
 import CartContentCount from "./cart-module/CartContentCount";
 import { Product } from "./products-module/ProductType";
+import { HashRouter, Link, Route, Routes } from "react-router-dom";
+import CheckOut from "./cart-module/CheckOut";
 
 interface CartContextType {
   cart: CartType;
   addToCart: (newItem: Product, count: number) => void;
+  emptyCart: () => void;
 }
 //@ts-ignore
 const initialCartContext: CartContextType = {};
@@ -27,22 +30,38 @@ function Eticaret() {
 
     const newProduct = { ...newItem, count: count };
     const newProucts = [...cart.products, newProduct];
-    const newCart = { total: 200, products: newProucts };
+    const newTotal = newProucts.reduce((t, p) => p.price * p.count + t, 0);
+    const newCart = { total: newTotal, products: newProucts };
     setCart(newCart);
   };
 
+  function emptyCart() {
+    const newCart = { total: 0, products: [] };
+    setCart(newCart);
+  }
+
   return (
     <div>
-      <CartContext.Provider value={{ cart, addToCart }}>
-        <h1>Eticaret sayfam</h1>
-        <CartContentCount />
-        <h2>Sepetteki ürünler</h2>
-        <CartShowCase />
-        <h2>Size özel ürünler</h2>
-        <ProductsShowCase></ProductsShowCase>
-        <h2>Ödeme bilgileri</h2>
-        <h2>Ödeme işlem sonucu</h2>
-      </CartContext.Provider>
+      <HashRouter>
+        <CartContext.Provider value={{ cart, addToCart, emptyCart }}>
+          <h1>Eticaret uygulaması</h1>
+          <CartContentCount />
+          <Link to={"/"}>ana sayfa</Link> -
+          <Link to={"/sepet"}>sepeti göster</Link> -
+          <Link to={"/odemeyap"}>ödeme yap</Link>
+          <Routes>
+            <Route path="/" element={<ProductsShowCase></ProductsShowCase>} />
+            <Route path="/sepet" element={<CartShowCase />} />
+            <Route path="/odemeyap" element={<CheckOut />} />
+            <Route
+              path="/thankyou"
+              element={
+                <h2>Ödemeniz alınmıştır. Ürünler gönderime hazırlanıyor</h2>
+              }
+            />
+          </Routes>
+        </CartContext.Provider>
+      </HashRouter>
     </div>
   );
 }

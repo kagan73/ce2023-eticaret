@@ -1,4 +1,4 @@
-import { ListGroup } from "react-bootstrap";
+import { Button, ListGroup } from "react-bootstrap";
 import { Product } from "../products-module/ProductType";
 import { useState } from "react";
 import { useCartContext } from "../Eticaret";
@@ -69,6 +69,9 @@ function CartShowCase() {
         ))}
       </ListGroup>
       <div>TOPLAM : {cart.total}</div>
+      <Button onClick={() => cartcontext.emptyCart()} variant="danger">
+        Sepeti boşalt
+      </Button>
     </div>
   );
 }
